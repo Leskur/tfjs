@@ -1,3 +1,4 @@
+const tf = require('@/tensorflow/tfjs-core')
 const posenet = require('@tensorflow-models/posenet')
 
 
@@ -12,7 +13,10 @@ Page({
     const listener = camera.onCameraFrame((frame) => {
       count++
       if (count === 4) {
-        console.log(frame.data)
+        if (this.net) {
+          this.detectPose(frame, this.net)
+          console.log(frame.data)
+        }
         count = 0
       }
 
@@ -28,5 +32,14 @@ Page({
       // modelUrl: 'https://www.gstaticcnapps.cn/tfjs-models/savedmodel/posenet/mobilenet/float/050/model-stride16.json'
     })
     console.log(this.net)
+  },
+  async detectPose(frame, net) {
+    const imgData = {
+      data: new Uint32Array(frame.data),
+      width: frame.width,
+      height: frame.height
+    }
+    const imgTensor = tf.browser.fromPixels(imgData, 4)
+    const imgSlice = imgTensor.slice([0, 0, 0], [-1, -1, 3])
   }
 })
