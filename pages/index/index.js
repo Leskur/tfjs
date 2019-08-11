@@ -12,16 +12,16 @@ Page({
     let count = 0
     const listener = camera.onCameraFrame((frame) => {
       count++
-      if (count === 4) {
+      if (count === 10) {
         if (this.net) {
-          this.detectPose(frame, this.net)
-          console.log(frame.data)
+          // console.log(frame.data)
+          this.drawPose(frame)
         }
         count = 0
       }
 
     })
-    listener.start()
+    // listener.start()
   },
   async loadPosenet() {
     this.net = await posenet.load({
@@ -39,7 +39,7 @@ Page({
       width: frame.width,
       height: frame.height
     }
-    console.log(imgData)
+    // console.log(imgData)
     const imgSlice = tf.tidy(() => {
       const imgTensor = tf.browser.fromPixels(imgData, 4)
       return imgTensor.slice([0, 0, 0], [-1, -1, 3])
@@ -47,6 +47,17 @@ Page({
     const pose = await net.estimateSinglePose(imgSlice, {
       flipHorizontal: false
     })
-    console.log(pose)
+    imgSlice.dispose()
+    return pose
+  },
+  async drawPose(frame) {
+    const pose = await this.detectPose(frame, this.net)
+    if (pose == null || this.canvas == null) return
+    // console.log(pose)
+    if (pose.score >= 0.3) {
+      for (i in pose.keypoints) {
+        console.log(pose.keypoints[i])
+      }
+    }
   }
 })
