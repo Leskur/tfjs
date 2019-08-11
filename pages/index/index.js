@@ -13,5 +13,6 @@ Page({
 
     })
     listener.start()
+    this.canvas = wx.createCanvasContext('pose', this)
   },
 })
