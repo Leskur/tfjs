@@ -21,7 +21,7 @@ Page({
       }
 
     })
-    // listener.start()
+    listener.start()
   },
   async loadPosenet() {
     this.net = await posenet.load({
@@ -56,8 +56,23 @@ Page({
     // console.log(pose)
     if (pose.score >= 0.3) {
       for (i in pose.keypoints) {
-        console.log(pose.keypoints[i])
+        const point = pose.keypoints[i]
+        if (point.score >= 0.5) {
+          const {
+            x,
+            y
+          } = point.position
+          // Draw circle
+          this.drawCircle(this.canvas, x, y)
+        }
       }
     }
+    this.canvas.draw()
+  },
+  drawCircle(canvas, x, y) {
+    canvas.beginPath()
+    canvas.arc(x * 0.72, y * 0.72, 3, 0, 2 * Math.PI)
+    canvas.fileStyle = 'aqua'
+    canvas.fill()
   }
 })
