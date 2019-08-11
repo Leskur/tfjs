@@ -21,7 +21,7 @@ Page({
       }
 
     })
-    // listener.start()
+    listener.start()
   },
   async loadPosenet() {
     this.net = await posenet.load({
@@ -44,6 +44,9 @@ Page({
       const imgTensor = tf.browser.fromPixels(imgData, 4)
       return imgTensor.slice([0, 0, 0], [-1, -1, 3])
     })
-    console.log(imgSlice)
+    const pose = await net.estimateSinglePose(imgSlice, {
+      flipHorizontal: false
+    })
+    console.log(pose)
   }
 })
