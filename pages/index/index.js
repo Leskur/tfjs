@@ -1,4 +1,4 @@
-const tf = require('@/tensorflow/tfjs-core')
+const tf = require('@tensorflow/tfjs-core')
 const posenet = require('@tensorflow-models/posenet')
 
 
@@ -35,11 +35,15 @@ Page({
   },
   async detectPose(frame, net) {
     const imgData = {
-      data: new Uint32Array(frame.data),
+      data: new Uint8Array(frame.data),
       width: frame.width,
       height: frame.height
     }
-    const imgTensor = tf.browser.fromPixels(imgData, 4)
-    const imgSlice = imgTensor.slice([0, 0, 0], [-1, -1, 3])
+    console.log(imgData)
+    const imgSlice = tf.tidy(() => {
+      const imgTensor = tf.browser.fromPixels(imgData, 4)
+      return imgTensor.slice([0, 0, 0], [-1, -1, 3])
+    })
+    console.log(imgSlice)
   }
 })
